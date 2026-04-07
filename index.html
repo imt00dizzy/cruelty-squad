@@ -340,11 +340,14 @@ urlMap["index.audio.worklet.js"] = URL.createObjectURL(new Blob([await workletRe
 
 setupInterception(urlMap);
 
+var engineResp = await fetch(CDN + "index.js");
+if (!engineResp.ok) throw new Error("Failed to load engine");
+var engineBlobUrl = URL.createObjectURL(new Blob([await engineResp.text()], {type: "application/javascript"}));
 await new Promise(function(resolve, reject) {
 var script = document.createElement("script");
-script.src = CDN + "index.js";
+script.src = engineBlobUrl;
 script.onload = resolve;
-script.onerror = function() { reject(new Error("Failed to load engine")); };
+script.onerror = function() { reject(new Error("Failed to execute engine")); };
 document.head.appendChild(script);
 });
 
